@@ -11,6 +11,7 @@ namespace ZTester
         static InputService _inputService = new InputService();
         static RebootSystem _rebootSystem = new RebootSystem();
         static WSHTester _wshTester = new WSHTester();
+        static SleepTest _sleepTest = new SleepTest();
         static void Main(string[] args)
         {
             Console.WriteLine("ZTester, (c) 2019 ZHENIA Zgurovets Inc.");
@@ -52,8 +53,7 @@ namespace ZTester
 
                 case 2:
                     {
-                        Console.WriteLine("This feature is under development.");
-                        Thread.Sleep(3500);
+                        _sleepTest.StartTest();
                         break;
                     }
 

@@ -7,16 +7,25 @@ namespace ZTester.Services
     {
         public void RunCMDCommand(string arguments)
         {
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-            startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = arguments;
-            process.StartInfo = startInfo;
-            process.Start();
+            try
+            {
+                System.Diagnostics.Process process = new System.Diagnostics.Process();
+                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                startInfo.FileName = "cmd.exe";
+                startInfo.Arguments = arguments;
+                process.StartInfo = startInfo;
+                process.Start();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"###################### {arguments} ######################");
+                Console.WriteLine(e.Message);
+                Console.ReadLine();
+            }
         }
 
-        public void RunCMDCommand(TestType testType, string arguments, string fileName = "cmd.exe", string workDirectory = "")
+        public void RunCMDCommand(string arguments, string fileName = "cmd.exe", string workDirectory = "", string verb = "", bool waitForExit = false)
         {
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo
@@ -32,10 +41,15 @@ namespace ZTester.Services
             {
                 startInfo.WorkingDirectory = workDirectory;
             }
-            
+            if (verb != "")
+            {
+                startInfo.Verb = verb;
+            }
+
+
             process.StartInfo = startInfo;
             process.Start();
-            if (testType == TestType.WSHTest)
+            if ( waitForExit)
             {
                 process.WaitForExit();
             }
