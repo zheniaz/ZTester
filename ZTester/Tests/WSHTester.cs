@@ -110,7 +110,7 @@ namespace ZTester.Tests
             string arguments = $"{scriptName} {testName} 5.6";
             string fileName = "WSHTester.exe";
             string workDirectory = "C:\\work";
-            _cmdService.RunCMDCommand(TestType.WSHTest, arguments, fileName, workDirectory);
+            _cmdService.RunCMDCommand(arguments, fileName, workDirectory, "", true);
 
             _fileService.RemoveFile(scriptLocation, $"{testName}.xml", isXMLExists);
             _fileService.RenameFile($"{sourceTestFile}.xml", $"{testPath}");

@@ -54,6 +54,7 @@
     <Compile Include="Services\InputService.cs" />
     <Compile Include="Services\LogInService.cs" />
     <Compile Include="Tests\RebootSystem.cs" />
+    <Compile Include="Tests\SleepTest.cs" />
     <Compile Include="Tests\WSHTester.cs" />
     <Compile Include="Util\Constants.cs" />
   </ItemGroup>
