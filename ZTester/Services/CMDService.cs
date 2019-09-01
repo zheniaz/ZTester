@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Util;
 
 namespace ZTester.Services
@@ -14,6 +15,7 @@ namespace ZTester.Services
                 startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                 startInfo.FileName = "cmd.exe";
                 startInfo.Arguments = arguments;
+                startInfo.UseShellExecute = true;
                 process.StartInfo = startInfo;
                 process.Start();
             }
