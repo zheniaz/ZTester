@@ -85,7 +85,20 @@ namespace ZTester.Services
 
         public List<string> GetDirectories(string path)
         {
-            List<string> directories = Directory.GetDirectories(path).ToList();
+            List<string> directories = null;
+            try
+            {
+                if (Directory.Exists(path))
+                {
+                    directories = Directory.GetDirectories(path).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.ReadKey();
+            }
+
             return directories;
         }
 
@@ -206,6 +219,25 @@ namespace ZTester.Services
                 Console.WriteLine(e.Message);
                 Console.ReadKey();
             }
+        }
+
+        public List<string> GetFiles(string path)
+        {
+            List<string> files = null;
+            try
+            {
+                if (Directory.Exists(path))
+                {
+                    files = Directory.GetFiles(path).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.ReadKey();
+            }
+
+            return files;
         }
     }
 }
