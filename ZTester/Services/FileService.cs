@@ -134,5 +134,78 @@ namespace ZTester.Services
                     writer.Close();
             }
         }
+
+        public string GetPathRoot(string str)
+        {
+            return Path.GetPathRoot(str);
+        }
+
+        public void CreateDirectory(string path)
+        {
+            try
+            {
+                if (Directory.Exists(path))
+                {
+                    Console.WriteLine("That path exists already.");
+                    return;
+                }
+
+                DirectoryInfo di = Directory.CreateDirectory(path);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("The process failed: {0}", e.ToString());
+            }
+            finally { }
+        }
+
+        public void CopyFile(string sourcePath, string targetPath)
+        {
+            try
+            {
+                if (Directory.Exists(sourcePath))
+                {
+                    System.IO.File.Copy(sourcePath, targetPath, true);
+                }
+                else
+                {
+                    Console.WriteLine("Source path does not exist!");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        public void CopyFiles(string sourcePath, string targetPath)
+        {
+            try
+            {
+                Console.WriteLine("Directory.Exists(sourcePath) exists: " + Directory.Exists(sourcePath));
+                Console.WriteLine("Directory.Exists(targetPath) exists: " + Directory.Exists(targetPath));
+                if (Directory.Exists(sourcePath) && Directory.Exists(targetPath))
+                {
+                    string[] files = Directory.GetFiles(sourcePath);
+
+                    foreach (string file in files)
+                    {
+                        Console.WriteLine("file: " + file);
+                        string fileName = Path.GetFileName(file);
+                        string destFile = Path.Combine(targetPath, fileName);
+                        System.IO.File.Copy(file, destFile, true);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Source path does not exist!");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.ReadKey();
+            }
+        }
     }
 }
