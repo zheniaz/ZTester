@@ -8,6 +8,8 @@ using System.Runtime.InteropServices;
 using System.Net;
 using Microsoft.WindowsAPICodePack.Net;
 using ZTester.models;
+using System.Diagnostics;
+using System.Management;
 
 namespace ZTester.Tests
 {
@@ -38,12 +40,25 @@ namespace ZTester.Tests
             {
                 _fileService.RemoveFile(systemDrive, testBinPath, isTestBinExist);
             }
-            else
-            {
-                _fileService.CreateDirectory(testBinPath);
-            }
-;
-            //_cmdService.RunCMDCommand("net use * \\\\spsrv\\public /u:ntdev\\texas \"Tp3Rh4uwLF!#!yO\"");
+            _fileService.CreateDirectory(testBinPath);
+
+            string desktopPath = $@"C:\Users\{Environment.UserName}\Desktop";
+            string ZTesterConfigFilePath = $@"{desktopPath}\ZTester.config";
+
+            List<NetworkSettings> networkSettingsList = new List<NetworkSettings>();
+            _xmlService.GetZTesterConfigData(ref networkSettingsList, ZTesterConfigFilePath);
+            NetworkSettings networkSettings = networkSettingsList.Find(s => s.SettingName == "SleepTest");
+
+            string PROCESSOR_ARCHITECTURE = System.Environment.GetEnvironmentVariable("PROCESSOR_ARCHITECTURE");
+            string sourcePath = $@"{networkSettings.SleepTestFileLocation}\{PROCESSOR_ARCHITECTURE}\";
+            string targetPath = $@"{systemDrive}\TestBin\";
+
+            string arguments = $"/generic:{networkSettings.URL} /user:{networkSettings.UserName} /pass:{networkSettings.Password}";
+            //string arguments = $"net use * {netSettings.URL} {netSettings.UserName} \"{netSettings.Password}\"";
+            _cmdService.RunCMDCommand(arguments, fileName: @"C:\system32\mstsc.exe");
+            _fileService.CopyFiles(sourcePath, targetPath);
+
+            #region Network Region
 
             //IntPtr ptr;
             //bool logonUser = LogonUser("\\\\spsrv\\public /u:ntdev\\texas", "redmond.corp.microsoft.com", "Tp3Rh4uwLF!#!yO", 9, 0, out ptr);
@@ -55,39 +70,99 @@ namespace ZTester.Tests
             //WindowsIdentity windowsIdentity = new WindowsIdentity(ptr);
             //var impersonationContext = windowsIdentity.Impersonate
 
-            string desktopPath = $"C:\\Users\\{Environment.UserName}\\Desktop";
-            string ZTesterConfigFilePath = $"{desktopPath}\\ZTester.config";
-            List<NetworkSettings> netSettingsList = _xmlService.GetZTesterConfigData(ZTesterConfigFilePath);
-            NetworkSettings netSettings = netSettingsList.Find(s => s.SettingName == "SleepTest");
-            var networks = NetworkListManager.GetNetworks(NetworkConnectivityLevels.Connected);
 
-            Console.WriteLine("Available networks:");
-            foreach (var item in networks)
-            {
-                Console.WriteLine("Name: " + item.Description);
-            }
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine();
 
-            NetworkCredential credential = new NetworkCredential(netSettings.UserName, netSettings.Password, netSettings.Domain);
-            using (new Services.NetworkConnection(netSettings.NetworkName, credential))
-            {
-                string PROCESSOR_ARCHITECTURE = System.Environment.GetEnvironmentVariable("PROCESSOR_ARCHITECTURE");
-                string sourcePath = $@"\\spsrv\Public\Base-11B\RS3\Pwtest\{PROCESSOR_ARCHITECTURE}\";
-                string targetPath = $"{systemDrive}\\TestBin\\";
-                _fileService.CopyFiles(sourcePath, targetPath);
-            }
+
+
+
+
+            //List<NetworkSettings> netSettingsList = _xmlService.GetZTesterConfigData(ZTesterConfigFilePath);
+            //NetworkSettings netSettings = netSettingsList.Find(s => s.SettingName == "SleepTest");
+            //var networks = NetworkListManager.GetNetworks(NetworkConnectivityLevels.Connected);
+            //bool isHasMicrosoftNetwork = false;
+
+
+
+            //Console.WriteLine("Available networks:");
+            //foreach (var item in networks)
+            //{
+            //    if (item.Name == netSettings.NetworkName)
+            //    {
+            //        isHasMicrosoftNetwork = true;
+            //    }
+            //}
+
+            //if (isHasMicrosoftNetwork == false)
+            //{
+            //    throw new Exception("You do not have the corp.microsoft.com network. Connect And try again.");
+            //}
+            //Console.WriteLine();
+            //Console.WriteLine();
+            //Console.WriteLine();
+
+            //Process rdcProcess = new Process();
+
+            //string executable = Environment.ExpandEnvironmentVariables(@"%SystemRoot%\system32\mstsc.exe");
+            //if (executable != null)
+            //{
+            //    rdcProcess.StartInfo.FileName = executable;
+            //    rdcProcess.StartInfo.Arguments = "/v " + netSettings.UserName;  // ip or name of computer to connect
+            //    rdcProcess.Start();
+            //}
+
+            //ConnectionOptions connOptions = new ConnectionOptions()
+            //{
+            //    Username = netSettings.UserName,
+            //    Password = netSettings.Password,
+            //    EnablePrivileges = true,
+            //    Impersonation = ImpersonationLevel.Impersonate
+            //};
+
+
+
+            //ManagementScope scope = new ManagementScope($@"\\spsrv\Public\Base-11B\RS3\Pwtest", connOptions);
+            //scope.Connect();
+
+            //NetworkCredential credential = new NetworkCredential(netSettings.UserName, netSettings.Password, netSettings.Domain);
+
+            //using (new Services.NetworkConnection(netSettings.NetworkName, credential))
+            //{
+
+            //}
+
+            #endregion
+
+
 
             Thread.Sleep(30000);
 
-            _cmdService.RunCMDCommand("/sleep /c:4 /p:120 /d:150 /s:all", "pwrtest.exe", testBinPath);
+            //_cmdService.RunCMDCommand("/sleep /c:4 /p:120 /d:150 /s:all", "pwrtest.exe", testBinPath);
 
             #region test region
 
             var Testnetworks = NetworkListManager.GetNetworks(NetworkConnectivityLevels.Connected);
 
             #endregion
+        }
+
+        public void SetConnection()
+        {
+
+        }
+
+        public void SetConnectio2()
+        {
+
+        }
+
+        public void SetConnection3()
+        {
+
+        }
+
+        public void SetConnection4()
+        {
+
         }
     }
 }

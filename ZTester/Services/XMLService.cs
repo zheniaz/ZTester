@@ -13,14 +13,14 @@ namespace ZTester.Services
 {
     class XMLService
     {
-        public List<NetworkSettings> GetZTesterConfigData(string path)
+        public void GetZTesterConfigData<T>(ref List<T> networkSettings, string path)
         {
-            XmlSerializer deserializer = new XmlSerializer(typeof(List<NetworkSettings>));
+            XmlSerializer deserializer = new XmlSerializer(typeof(List<T>));
             TextReader textReader = new StreamReader(path);
-            List<NetworkSettings> networkSettings;
-            networkSettings = (List<NetworkSettings>)deserializer.Deserialize(textReader);
+            //List<T> networkSettings;
+            networkSettings = (List<T>)deserializer.Deserialize(textReader);
             textReader.Close();
-            return networkSettings;
+            //return networkSettings;
         }
 
         public void SerializeToXML<T>(List<T> list, string targetPath)
