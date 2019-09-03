@@ -50,11 +50,13 @@ namespace ZTester.Services
 
 
             process.StartInfo = startInfo;
-            process.Start();
+            
             if ( waitForExit)
             {
                 process.WaitForExit();
             }
+
+            process.Start();
         }
 
         public void RunCMDCommands(string[] cmdCommandArray)
