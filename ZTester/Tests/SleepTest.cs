@@ -25,15 +25,15 @@ namespace ZTester.Tests
 
         public void StartTest()
         {
-            //_cmdService.RunCMDCommand("https://www.youtube.com/watch?v=_U24PBWOpjM", fileName: "iexplore.exe", waitForExit: false);
-            //Thread.Sleep(30000);
+            _cmdService.RunCMDCommand("https://www.youtube.com/watch?v=_U24PBWOpjM", fileName: "iexplore.exe", waitForExit: false);
+            Thread.Sleep(30000);
 
-            //_cmdService.RunCMDCommand("https://www.youtube.com/watch?v=jj_Mei27E7Q", fileName: "iexplore.exe", waitForExit: false);
-            //Thread.Sleep(30000);
+            _cmdService.RunCMDCommand("https://www.youtube.com/watch?v=jj_Mei27E7Q", fileName: "iexplore.exe", waitForExit: false);
+            Thread.Sleep(30000);
 
-            //_cmdService.RunCMDCommand("https://www.youtube.com/watch?v=5TcOvHigjYE", fileName: "iexplore.exe", waitForExit: false);
-            //Thread.Sleep(30000);
-            
+            _cmdService.RunCMDCommand("https://www.youtube.com/watch?v=5TcOvHigjYE", fileName: "iexplore.exe", waitForExit: false);
+            Thread.Sleep(30000);
+
             string systemDrive = _fileService.GetPathRoot(Environment.SystemDirectory);
             string testBinPath = systemDrive + "TestBin";
             bool isTestBinExist = _fileService.CheckIfDirectoryExists(testBinPath);
