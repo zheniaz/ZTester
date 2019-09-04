@@ -29,5 +29,8 @@ namespace ZTester.models
 
         [XmlElement("NetworkName")]
         public string NetworkName { get; set; }
+
+        [XmlElement("IPAdress")]
+        public string IPAdress { get; set; }
     }
 }

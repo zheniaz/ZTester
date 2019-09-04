@@ -6,10 +6,11 @@ using ZTester.Services;
 using System.Threading;
 using System.Runtime.InteropServices;
 using System.Net;
-using Microsoft.WindowsAPICodePack.Net;
+//using Microsoft.WindowsAPICodePack.Net;
 using ZTester.models;
 using System.Diagnostics;
 using System.Management;
+using Util;
 
 namespace ZTester.Tests
 {
@@ -32,33 +33,39 @@ namespace ZTester.Tests
 
             //_cmdService.RunCMDCommand("https://www.youtube.com/watch?v=5TcOvHigjYE", fileName: "iexplore.exe", waitForExit: false);
             //Thread.Sleep(30000);
-
+            
             string systemDrive = _fileService.GetPathRoot(Environment.SystemDirectory);
             string testBinPath = systemDrive + "TestBin";
-            bool isTestBinExist = _fileService.CheckIfFileExists(testBinPath);
-            if (_fileService.CheckIfFileExists(testBinPath))
+            bool isTestBinExist = _fileService.CheckIfDirectoryExists(testBinPath);
+            if (_fileService.CheckIfDirectoryExists(testBinPath))
             {
-                _fileService.RemoveFile(systemDrive, testBinPath, isTestBinExist);
+                _fileService.RemoveDirectory(testBinPath);
             }
             _fileService.CreateDirectory(testBinPath);
+            
 
             string desktopPath = $@"C:\Users\{Environment.UserName}\Desktop";
-            string ZTesterConfigFilePath = $@"{desktopPath}\ZTester.config";
+            string ZTesterConfigFilePath = $"{_fileService.GetFullFilePath(Constants.ZTesterConfigName)}";
+            
 
             List<NetworkSettings> networkSettingsList = new List<NetworkSettings>();
             _xmlService.GetZTesterConfigData(ref networkSettingsList, ZTesterConfigFilePath);
-            NetworkSettings networkSettings = networkSettingsList.Find(s => s.SettingName == "SleepTest");
+            NetworkSettings networkSettings = networkSettingsList.Find(s => s.SettingName == TestType.SleepTest.ToString());
+            
 
+            
             string PROCESSOR_ARCHITECTURE = System.Environment.GetEnvironmentVariable("PROCESSOR_ARCHITECTURE");
             string sourcePath = $@"{networkSettings.SleepTestFileLocation}\{PROCESSOR_ARCHITECTURE}\";
             string targetPath = $@"{systemDrive}\TestBin\";
-
-            string arguments = $"/generic:{networkSettings.URL} /user:{networkSettings.UserName} /pass:{networkSettings.Password}";
+            
+            string arguments = $"/generic:TERMSRV/{networkSettings.IPAdress} /user:{networkSettings.UserName} /pass:{networkSettings.Password}";
             //string arguments = $"net use * {netSettings.URL} {netSettings.UserName} \"{netSettings.Password}\"";
-            _cmdService.RunCMDCommand(arguments, fileName: @"C:\system32\mstsc.exe");
-            _fileService.CopyFiles(sourcePath, targetPath);
+            //_cmdService.RunCMDCommand(arguments, fileName: @"C:\Windows\system32\mstsc.exe");
+
+
 
             #region Network Region
+
 
             //IntPtr ptr;
             //bool logonUser = LogonUser("\\\\spsrv\\public /u:ntdev\\texas", "redmond.corp.microsoft.com", "Tp3Rh4uwLF!#!yO", 9, 0, out ptr);
@@ -130,24 +137,27 @@ namespace ZTester.Tests
 
             //}
 
+            //var Testnetworks = NetworkListManager.GetNetworks(NetworkConnectivityLevels.Connected);
+
             #endregion
 
-
+            _fileService.CopyFiles(sourcePath, targetPath);
 
             Thread.Sleep(30000);
 
-            //_cmdService.RunCMDCommand("/sleep /c:4 /p:120 /d:150 /s:all", "pwrtest.exe", testBinPath);
-
-            #region test region
-
-            var Testnetworks = NetworkListManager.GetNetworks(NetworkConnectivityLevels.Connected);
-
-            #endregion
+            _cmdService.RunCMDCommand("/sleep /c:4 /p:120 /d:150 /s:all", "pwrtest.exe", testBinPath);
         }
 
-        public void SetConnection()
+        public void SetConnection(NetworkSettings networkSettings)
         {
+            Process rdcProcess = new Process();
+            rdcProcess.StartInfo.FileName = Environment.ExpandEnvironmentVariables(@"%SystemRoot%\system32\cmdkey.exe");
+            rdcProcess.StartInfo.Arguments = $"/generic:TERMSRV/{networkSettings.IPAdress} /user:{networkSettings.UserName} /pass:{networkSettings.Password}";
+            rdcProcess.Start();
 
+            rdcProcess.StartInfo.FileName = Environment.ExpandEnvironmentVariables(@"%SystemRoot%\system32\mstsc.exe");
+            rdcProcess.StartInfo.Arguments = $"/v {networkSettings.IPAdress}"; 
+            rdcProcess.Start();
         }
 
         public void SetConnectio2()
