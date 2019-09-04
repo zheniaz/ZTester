@@ -14,16 +14,14 @@ namespace ZTester
         private FileService _fileService = new FileService();
         private LogInService _logInService = new LogInService();
 
-        public string AppPath { get { return Path.GetDirectoryName(Path.GetFullPath(Constants.AppName)); } set { } }
-        public string AppFullPath { get { return this.AppPath + "\\" + Constants.AppName; } set { } }
-        public string LogFileFullPath { get { return IsLogFileExists ? Path.GetFullPath($"{AppPath}\\{Constants.LogFileName}") : ""; } }
+        public string LogFileFullPath { get { return IsLogFileExists ? Path.GetFullPath($"{_fileService.AppPath}\\{Constants.LogFileName}") : ""; } }
         public string StartupDirectoryFullPath { get { return _fileService.GetStartupFolderPath(); } set { } }
         public string ShortcutRebootLoopFullPath { get { return $"{StartupDirectoryFullPath}\\{Constants.RebootLoopShortcutName}"; } }
 
         public int NeedToReboot { get { return GetCountNeedToReboot(); } set { } }
         public int RebootCount = 0;
 
-        public bool IsLogFileExists { get { return _fileService.CheckIfFileExists($"{AppPath}\\{Constants.LogFileName}"); } set { } }
+        public bool IsLogFileExists { get { return _fileService.CheckIfFileExists($"{_fileService.AppPath}\\{Constants.LogFileName}"); } set { } }
         public bool IsShortcutOfRebootLoopExists { get { return _fileService.CheckIfFileExists($"{StartupDirectoryFullPath}\\{Constants.RebootLoopShortcutName}.lnk"); } }
 
         public RebootSystem()
@@ -39,8 +37,8 @@ namespace ZTester
                 CreateLogFile(rebootCount);
                 if (!IsShortcutOfRebootLoopExists)
                 {
-                    _fileService.CreateShortcut(AppPath, Constants.RebootLoopShortcutName, IsShortcutOfRebootLoopExists);
-                    _fileService.MoveFileToFolder(AppPath + "\\" + Constants.RebootLoopShortcutName + ".lnk", StartupDirectoryFullPath + "\\" + Constants.RebootLoopShortcutName + ".lnk");
+                    _fileService.CreateShortcut(_fileService.AppPath, Constants.RebootLoopShortcutName, IsShortcutOfRebootLoopExists);
+                    _fileService.MoveFileToFolder(_fileService.AppPath + "\\" + Constants.RebootLoopShortcutName + ".lnk", StartupDirectoryFullPath + "\\" + Constants.RebootLoopShortcutName + ".lnk");
                 }
                 Reboot();
             }
@@ -132,7 +130,7 @@ namespace ZTester
 
         public void CreateLogFile(int rebootCount)
         {
-            string path = $"{AppPath}\\{Constants.LogFileName}";
+            string path = $"{_fileService.AppPath}\\{Constants.LogFileName}";
             if (!File.Exists(path))
             {
                 using (StreamWriter sw = File.CreateText(path))
@@ -172,7 +170,7 @@ namespace ZTester
 
         public void AddEntryToLogFile()
         {
-            string path = $"{AppPath}\\{Constants.LogFileName}";
+            string path = $"{_fileService.AppPath}\\{Constants.LogFileName}";
             if (File.Exists(path))
             {
                 using (StreamWriter sw = File.AppendText(path))
@@ -221,8 +219,8 @@ namespace ZTester
 
         private void RenameLogFile()
         {
-            string oldfileName = $"{AppPath}\\{Constants.LogFileName}";
-            string newFileNameTitle = $"{AppPath}\\rebootLog rebooted-{RebootCount}-times {DateTime.Now:MM-dd-yyyy_hh-mm-ss}.txt";
+            string oldfileName = $"{_fileService.AppPath}\\{Constants.LogFileName}";
+            string newFileNameTitle = $"{_fileService.AppPath}\\rebootLog rebooted-{RebootCount}-times {DateTime.Now:MM-dd-yyyy_hh-mm-ss}.txt";
             _fileService.RenameFile(oldfileName, newFileNameTitle);
         }
 

@@ -11,7 +11,7 @@ namespace Util
         public const string AppName = "ZTester.exe";
         public const string LogFileName = "rebootLog.txt";
         public const string RebootLoopShortcutName = "ZTester - Shortcut";
-
+        public const string ZTesterConfigName = "ZTester.config";
     }
 
     public enum TestType { None, RebootSystemTest, SleepTest, WSHTest };

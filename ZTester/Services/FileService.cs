@@ -11,10 +11,126 @@ namespace ZTester.Services
 {
     class FileService
     {
+        public string AppPath { get { return Path.GetDirectoryName(Path.GetFullPath(Constants.AppName)); } set { } }
+        public string AppFullPath { get { return this.AppPath + "\\" + Constants.AppName; } set { } }
+
+        #region Directory Region
+
+        public string GetStartupFolderPath()
+        {
+            string path = Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)).FullName;
+            if (Environment.OSVersion.Version.Major >= 6)
+            {
+                path = Directory.GetParent(path).ToString() + @"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup";
+            }
+            return path;
+        }
+
+        public void CreateShortcut(string directoryFullPath, string fileName, bool isFileExists)
+        {
+            if (!isFileExists)
+            {
+                WshShell shell = new WshShell();
+                string shortcutPathLink = directoryFullPath + $@"\{fileName}.lnk";
+                IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(directoryFullPath + $@"\{fileName}.lnk");
+                shortcut.Description = "New shortcut for a RebootLoop";
+                shortcut.WorkingDirectory = directoryFullPath;
+                shortcut.TargetPath = directoryFullPath + $@"\{Constants.AppName}";
+                shortcut.Save();
+            }
+        }
+
+        public List<string> GetAllFilesWithExectExtantion(string sourcedirectory, string extension)
+        {
+            List<string> files = Directory.GetFiles(sourcedirectory, $"*.{extension}", SearchOption.AllDirectories).ToList();
+
+            return files;
+        }
+
+        public List<string> GetDirectories(string path)
+        {
+            List<string> directories = null;
+            try
+            {
+                if (Directory.Exists(path))
+                {
+                    directories = Directory.GetDirectories(path).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.ReadKey();
+            }
+
+            return directories;
+        }
+
+        public void CreateDirectory(string path)
+        {
+            try
+            {
+                if (Directory.Exists(path))
+                {
+                    Console.WriteLine("That path exists already.");
+                    return;
+                }
+
+                DirectoryInfo di = Directory.CreateDirectory(path);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("The process failed: {0}", e.ToString());
+            }
+            finally { }
+        }
+
+        public bool CheckIfDirectoryExists(string path)
+        {
+            bool isDirectoryExists = Directory.Exists(path);
+            return isDirectoryExists;
+        }
+
         public bool CheckIfFileExists(string filePath)
         {
             bool isFileExists = System.IO.File.Exists(filePath);
             return isFileExists;
+        }
+
+        public void RemoveDirectory(string path)
+        {
+            try
+            {
+                string[] files = Directory.GetFiles(path);
+                string[] dirs = Directory.GetDirectories(path);
+
+                foreach (string file in files)
+                {
+                    System.IO.File.SetAttributes(file, FileAttributes.Normal);
+                    System.IO.File.Delete(file);
+                }
+
+                foreach (string dir in dirs)
+                {
+                    RemoveFilesAndFoldersFromDirectory(dir);
+                }
+
+                Directory.Delete(path, false);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("The process failed: {0}", e.Message);
+            }
+        }
+
+        #endregion
+
+        #region File Region
+
+        public void RenameFile(string oldFileName, string newFileName)
+        {
+            System.IO.File.Move(oldFileName, newFileName);
+            Thread.Sleep(500);
         }
 
         public void MoveFileToFolder(string filePath, string destination)
@@ -46,60 +162,21 @@ namespace ZTester.Services
             Thread.Sleep(1000);
         }
 
-        public string GetStartupFolderPath()
+        public void RemoveFilesAndFoldersFromDirectory(string path)
         {
-            string path = Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)).FullName;
-            if (Environment.OSVersion.Version.Major >= 6)
+            string[] files = Directory.GetFiles(path);
+            string[] dirs = Directory.GetDirectories(path);
+
+            foreach (string file in files)
             {
-                path = Directory.GetParent(path).ToString() + @"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup";
-            }
-            return path;
-        }
-
-        public void CreateShortcut(string directoryFullPath, string fileName, bool isFileExists)
-        {
-            if (!isFileExists)
-            {
-                WshShell shell = new WshShell();
-                string shortcutPathLink = directoryFullPath + $@"\{fileName}.lnk";
-                IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(directoryFullPath + $@"\{fileName}.lnk");
-                shortcut.Description = "New shortcut for a RebootLoop";
-                shortcut.WorkingDirectory = directoryFullPath;
-                shortcut.TargetPath = directoryFullPath + $@"\{Constants.AppName}";
-                shortcut.Save();
-            }
-        }
-
-        public void RenameFile(string oldFileName, string newFileName)
-        {
-            System.IO.File.Move(oldFileName, newFileName);
-            Thread.Sleep(500);
-        }
-
-        public List<string> GetAllFilesWithExectExtantion(string sourcedirectory, string extension)
-        {
-            List<string> files = Directory.GetFiles(sourcedirectory, $"*.{extension}", SearchOption.AllDirectories).ToList();
-
-            return files;
-        }
-
-        public List<string> GetDirectories(string path)
-        {
-            List<string> directories = null;
-            try
-            {
-                if (Directory.Exists(path))
-                {
-                    directories = Directory.GetDirectories(path).ToList();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                Console.ReadKey();
+                System.IO.File.SetAttributes(file, FileAttributes.Normal);
+                System.IO.File.Delete(file);
             }
 
-            return directories;
+            foreach (string dir in dirs)
+            {
+                RemoveFilesAndFoldersFromDirectory(dir);
+            }
         }
 
         public void CreateAndWriteXMLFile(string path, string fileName, Dictionary<string, string> linesList, string testName, bool isSpecific)
@@ -153,23 +230,9 @@ namespace ZTester.Services
             return Path.GetPathRoot(str);
         }
 
-        public void CreateDirectory(string path)
+        public string GetFullFilePath(string path)
         {
-            try
-            {
-                if (Directory.Exists(path))
-                {
-                    Console.WriteLine("That path exists already.");
-                    return;
-                }
-
-                DirectoryInfo di = Directory.CreateDirectory(path);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("The process failed: {0}", e.ToString());
-            }
-            finally { }
+            return Path.GetFullPath(path);
         }
 
         public void CopyFile(string sourcePath, string targetPath)
@@ -239,5 +302,7 @@ namespace ZTester.Services
 
             return files;
         }
+
+        #endregion
     }
 }
