@@ -91,12 +91,6 @@ namespace ZTester.Services
             return isDirectoryExists;
         }
 
-        public bool CheckIfFileExists(string filePath)
-        {
-            bool isFileExists = System.IO.File.Exists(filePath);
-            return isFileExists;
-        }
-
         public void RemoveDirectory(string path)
         {
             try
@@ -126,6 +120,16 @@ namespace ZTester.Services
         #endregion
 
         #region File Region
+
+        public bool CheckIfFileExists(string filePath, string errorMessage = "")
+        {
+            bool isFileExists = System.IO.File.Exists(filePath);
+            if (!isFileExists && errorMessage != "")
+            {
+                Console.WriteLine(errorMessage);
+            }
+            return isFileExists;
+        }
 
         public void RenameFile(string oldFileName, string newFileName)
         {

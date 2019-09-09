@@ -13,9 +13,8 @@ namespace ZTester.Services
                 System.Diagnostics.Process process = new System.Diagnostics.Process();
                 System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
                 startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                startInfo.FileName = "cmd.exe";
+                startInfo.FileName = "cmd";
                 startInfo.Arguments = arguments;
-                startInfo.UseShellExecute = true;
                 process.StartInfo = startInfo;
                 process.Start();
             }
@@ -27,16 +26,38 @@ namespace ZTester.Services
             }
         }
 
-        public void RunCMDCommand(string arguments, string fileName = "cmd.exe", string workDirectory = "", string verb = "", bool waitForExit = false)
+        public void RunREG(string arguments)
+        {
+            try
+            {
+                System.Diagnostics.Process process = new System.Diagnostics.Process();
+                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
+                startInfo.FileName = "reg";
+                startInfo.Arguments = arguments;
+                process.StartInfo = startInfo;
+                process.Start();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"###################### {arguments} ######################");
+                Console.WriteLine(e.Message);
+                Console.ReadLine();
+            }
+        }
+
+
+
+        public void RunCMDCommand(string arguments, string fileName = "cmd", string workDirectory = "", string verb = "", bool waitForExit = false, bool redirectStandardInput = false)
         {
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo
             {
-                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal,
                 FileName = fileName,
                 Arguments = arguments,
                 UseShellExecute = true,
-                RedirectStandardInput = false
+                RedirectStandardInput = redirectStandardInput,
             };
 
             if (workDirectory != "")
@@ -48,14 +69,12 @@ namespace ZTester.Services
                 startInfo.Verb = verb;
             }
 
-
             process.StartInfo = startInfo;
             
             if ( waitForExit)
             {
                 process.WaitForExit();
             }
-
             process.Start();
         }
 

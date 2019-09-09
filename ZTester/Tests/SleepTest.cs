@@ -37,34 +37,45 @@ namespace ZTester.Tests
             string systemDrive = _fileService.GetPathRoot(Environment.SystemDirectory);
             string testBinPath = systemDrive + "TestBin";
             bool isTestBinExist = _fileService.CheckIfDirectoryExists(testBinPath);
-            if (_fileService.CheckIfDirectoryExists(testBinPath))
+            bool isSleepTestFileExist = false;
+            if (!isTestBinExist)
             {
-                _fileService.RemoveDirectory(testBinPath);
+                _fileService.CreateDirectory(Constants.TestBinPath);
+                Process.Start("cmd.exe", @"/c xcopy M:\pwrtest.exe c:\TestBin\* /s /y");
             }
-            _fileService.CreateDirectory(testBinPath);
+            else
+            {
+                isSleepTestFileExist = _fileService.CheckIfFileExists(testBinPath);
+                if (!isSleepTestFileExist)
+                {
+                    Process.Start("cmd.exe", @"/c xcopy M:\pwrtest.exe c:\TestBin\* /s /y");
+                }
+            }
+            
             
 
-            string desktopPath = $@"C:\Users\{Environment.UserName}\Desktop";
+
+            //string desktopPath = $@"C:\Users\{Environment.UserName}\Desktop";
             string ZTesterConfigFilePath = $"{_fileService.GetFullFilePath(Constants.ZTesterConfigName)}";
             
+            NetworkSettingsModel networkSettingsXML = _xmlService.GetNetworkSettings(TestType.SleepTest);
 
-            List<NetworkSettings> networkSettingsList = new List<NetworkSettings>();
-            _xmlService.GetZTesterConfigData(ref networkSettingsList, ZTesterConfigFilePath);
-            NetworkSettings networkSettings = networkSettingsList.Find(s => s.SettingName == TestType.SleepTest.ToString());
-            
-
-            
             string PROCESSOR_ARCHITECTURE = System.Environment.GetEnvironmentVariable("PROCESSOR_ARCHITECTURE");
-            string sourcePath = $@"{networkSettings.SleepTestFileLocation}\{PROCESSOR_ARCHITECTURE}\";
+            string sourcePath = $@"{networkSettingsXML.TestFileLocation}\{PROCESSOR_ARCHITECTURE}\";
             string targetPath = $@"{systemDrive}\TestBin\";
-            
-            string arguments = $"/generic:TERMSRV/{networkSettings.IPAdress} /user:{networkSettings.UserName} /pass:{networkSettings.Password}";
-            //string arguments = $"net use * {netSettings.URL} {netSettings.UserName} \"{netSettings.Password}\"";
-            //_cmdService.RunCMDCommand(arguments, fileName: @"C:\Windows\system32\mstsc.exe");
+
+
 
 
 
             #region Network Region
+
+            string arguments = $"/generic:TERMSRV/{networkSettingsXML.IPAdress} /user:{networkSettingsXML.UserName} /pass:{networkSettingsXML.Password}";
+            _cmdService.RunCMDCommand(arguments, fileName: "net");
+            string remoteConnectionCommand = $"net use * {networkSettingsXML.URL} {networkSettingsXML.UserName} \"{networkSettingsXML.Password}\"";
+            _cmdService.RunCMDCommand($"use * {networkSettingsXML.URL} {networkSettingsXML.UserName} \"{networkSettingsXML.Password}\"", fileName: "net");
+            _cmdService.RunCMDCommand(arguments, fileName: @"mstsc");
+            _cmdService.RunCMDCommand(remoteConnectionCommand);
 
 
             //IntPtr ptr;
@@ -148,7 +159,7 @@ namespace ZTester.Tests
             _cmdService.RunCMDCommand("/sleep /c:4 /p:120 /d:150 /s:all", "pwrtest.exe", testBinPath);
         }
 
-        public void SetConnection(NetworkSettings networkSettings)
+        public void SetConnection(NetworkSettingsModel networkSettings)
         {
             Process rdcProcess = new Process();
             rdcProcess.StartInfo.FileName = Environment.ExpandEnvironmentVariables(@"%SystemRoot%\system32\cmdkey.exe");
@@ -156,7 +167,7 @@ namespace ZTester.Tests
             rdcProcess.Start();
 
             rdcProcess.StartInfo.FileName = Environment.ExpandEnvironmentVariables(@"%SystemRoot%\system32\mstsc.exe");
-            rdcProcess.StartInfo.Arguments = $"/v {networkSettings.IPAdress}"; 
+            rdcProcess.StartInfo.Arguments = $"/v {networkSettings.IPAdress}";
             rdcProcess.Start();
         }
 
