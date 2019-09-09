@@ -17,37 +17,43 @@ namespace ZTester.Tests
         private XMLService _xmlService = new XMLService();
         private FileService _fileService = new FileService();
         private RemoteConnectionService _remoteConnectionService = new RemoteConnectionService();
+        private CMDService _runCMDCommand = new CMDService();
 
         public void StartTest()
         {
-            // implement remote connection
-
             Console.WriteLine("Please select from RS1 to RS5:");
             string windowsBuild = _inputService.ReadRSVersion().ToUpper();
-            string operatingSystem = Environment.Is64BitOperatingSystem ? SystemType.AMD64.ToString() : SystemType.x86.ToString();
-            string source = source = $@"\\spsrv\Public\Base-11B\{windowsBuild}\Pwtest\{operatingSystem}";
-            
+            string operatingSystem = Environment.Is64BitOperatingSystem ? SystemType.AMD64.ToString().ToLower() : SystemType.x86.ToString();
+            string KSKfilePath = $@"\\winbuilds\release\Milestone\{windowsBuild}\RTM\{operatingSystem}fre\bin\kernel\kstress";
+
             NetworkSettingsModel networkSetting = _xmlService.GetNetworkSettings(TestType.KernelStressTest);
 
-            bool result = _remoteConnectionService.MapDrive("M", source, networkSetting.Domain + @"\" + networkSetting.UserName, networkSetting.Password);
-            
+            bool result = _remoteConnectionService.MapDrive("M", KSKfilePath, networkSetting.Domain + @"\" + networkSetting.UserName, networkSetting.Password);
 
-            // Implement reusable functionality for next steps:
-            bool isTestBinExists = _fileService.CheckIfDirectoryExists(Constants.TestBinPath);
-            bool isKernelStressFileExists = false;
-            if (!isTestBinExists)
+            if (result)
             {
-                _fileService.CreateDirectory(Constants.TestBinPath);
-                Process.Start("cmd.exe", @"/c xcopy M:\pwrtest.exe c:\TestBin\* /s /y");
+                Process.Start("cmd.exe", @"/c M:\ksk.cmd");
             }
-            else
-            {
-                isKernelStressFileExists = _fileService.CheckIfFileExists(Constants.TestBinPath);
-                if (!isKernelStressFileExists)
-                {
-                    Process.Start("cmd.exe", @"/c xcopy M:\pwrtest.exe c:\TestBin\* /s /y");
-                }
-            }
+
+
+            // Implement this for other tests and remove
+
+
+            //bool isTestBinExists = _fileService.CheckIfDirectoryExists(Constants.TestBinPath);
+            //bool isKernelStressFileExists = false;
+            //if (!isTestBinExists)
+            //{
+            //    _fileService.CreateDirectory(Constants.TestBinPath);
+            //    Process.Start("cmd.exe", @"/c xcopy M:\pwrtest.exe c:\TestBin\* /s /y");
+            //}
+            //else
+            //{
+            //    isKernelStressFileExists = _fileService.CheckIfFileExists(Constants.TestBinPath);
+            //    if (!isKernelStressFileExists)
+            //    {
+            //        Process.Start("cmd.exe", @"/c xcopy M:\pwrtest.exe c:\TestBin\* /s /y");
+            //    }
+            //}
 
                 
         }
