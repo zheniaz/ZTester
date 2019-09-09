@@ -31,7 +31,7 @@ namespace ZTester
         static void Main(string[] args)
         {
             #region testing region, remove after all
-            //_logInService.EnableAutoLogIn();
+            //_kernelStressTest.StartTest();
 
             //_logInService.IsUserAdministrator();
             //_cmdService.RunCMDCommand($@"ADD HKLM\SYSTEM\CurrentControlSet\Control\CrashControl /v CrashDumpEnabled /t REG_DWORD /d 1 /f", fileName: "reg");
