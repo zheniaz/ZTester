@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 
 namespace ZTester.models
 {
-    public class NetworkSettings
+    public class NetworkSettingsModel
     {
         [XmlAttribute("SettingName")]
         public string SettingName { get; set; }
@@ -21,8 +21,8 @@ namespace ZTester.models
         [XmlElement("URL")]
         public string URL { get; set; }
 
-        [XmlElement("SleepTestFileLocation")]
-        public string SleepTestFileLocation { get; set; }
+        [XmlElement("TestFileLocation")]
+        public string TestFileLocation { get; set; }
 
         [XmlElement("Domain")]
         public string Domain { get; set; }

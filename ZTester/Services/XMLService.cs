@@ -7,25 +7,44 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
+using Util;
 using ZTester.models;
 
 namespace ZTester.Services
 {
     class XMLService
     {
-        public void GetZTesterConfigData<T>(ref List<T> networkSettings, string path)
+        FileService _fileService = new FileService();
+        string ZTesterConfigFilePath = "";
+
+        public XMLService()
         {
-            XmlSerializer deserializer = new XmlSerializer(typeof(List<T>));
-            TextReader textReader = new StreamReader(path);
-            //List<T> networkSettings;
-            networkSettings = (List<T>)deserializer.Deserialize(textReader);
-            textReader.Close();
-            //return networkSettings;
+            ZTesterConfigFilePath = $"{_fileService.GetFullFilePath(Constants.ZTesterConfigName)}";
         }
 
-        public void SerializeToXML<T>(List<T> list, string targetPath)
+        public List<NetworkSettingsModel> GetNetworkSettingsList()
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(List<T>));
+            List<NetworkSettingsModel> networkSettingsList = new List<NetworkSettingsModel>();
+
+            XmlSerializer deserializer = new XmlSerializer(typeof(List<NetworkSettingsModel>));
+            TextReader textReader = new StreamReader(ZTesterConfigFilePath);
+            networkSettingsList = (List<NetworkSettingsModel>)deserializer.Deserialize(textReader);
+            textReader.Close();
+
+            return networkSettingsList;
+        }
+
+        public NetworkSettingsModel GetNetworkSettings(TestType testType)
+        {
+            List<NetworkSettingsModel> networkSettingsList = new List<NetworkSettingsModel>();
+            networkSettingsList = GetNetworkSettingsList();
+            NetworkSettingsModel networkSettings = networkSettingsList.Find(n => n.SettingName == testType.ToString());
+            return networkSettings;
+        }
+
+        public void SerializeToXML<NetworkSettingsModel>(List<NetworkSettingsModel> list, string targetPath)
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(List<NetworkSettingsModel>));
             TextWriter textWriter = new StreamWriter(targetPath);
             serializer.Serialize(textWriter, list);
             textWriter.Close();
