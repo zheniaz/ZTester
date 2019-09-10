@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Util;
+using ZTester.Interfaces;
 using ZTester.Services;
 
 namespace ZTester.Tests
 {
-    class WSHTester
+    class WSHTester : IZTester
     {
         private InputService _inputService = new InputService();
         private FileService _fileService = new FileService();

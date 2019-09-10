@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ZTester.Services;
 
-namespace ZTester.CMDCommands
+namespace ZTester.TestEnvironmentSpaceName
 {
     class TestEnvironment
     {
@@ -89,6 +89,16 @@ namespace ZTester.CMDCommands
             {
                 _registryKeyService.DeleteRegistryKey(keyPath, key);
             }
+        }
+
+        public void EnableCompleteMemoryDump()
+        {
+            _cmdService.RunCMDCommand($@"add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\CrashControl /v CrashDumpEnabled /d 1 /f", fileName: "reg");
+        }
+
+        public void DisableCompleteMemoryDump()
+        {
+            _cmdService.RunCMDCommand($@"add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\CrashControl /v CrashDumpEnabled /d 0 /f", fileName: "reg");
         }
     }
 }
