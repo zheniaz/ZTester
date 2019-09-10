@@ -13,6 +13,11 @@ namespace ZTester.Services
     {
         public string AppPath { get { return Path.GetDirectoryName(Path.GetFullPath(Constants.AppName)); } set { } }
         public string AppFullPath { get { return this.AppPath + "\\" + Constants.AppName; } set { } }
+        public string ZTestSettingXMLfullPath { get { return AppPath + "\\" + Constants.ZTestSettingConfigName; } set { } }
+        public string StartupDirectoryFullPath { get { return GetStartupFolderPath(); } set { } }
+
+        public bool IsShortcutOfRebootLoopExists { get { return CheckIfFileExists($"{StartupDirectoryFullPath}\\{Constants.RebootLoopShortcutName}.lnk"); } }
+        public bool IsZTestSettingXMLExists { get { return CheckIfFileExists(ZTestSettingXMLfullPath); }  }
 
         #region Directory Region
 
@@ -305,6 +310,27 @@ namespace ZTester.Services
             }
 
             return files;
+        }
+
+        #endregion
+
+        #region Specific Region
+
+        public void CreateShortcutInStartupFolder()
+        {
+            if (!IsShortcutOfRebootLoopExists)
+            {
+                CreateShortcut(AppPath, Constants.RebootLoopShortcutName, IsShortcutOfRebootLoopExists);
+                MoveFileToFolder(AppPath + "\\" + Constants.RebootLoopShortcutName + ".lnk", StartupDirectoryFullPath + "\\" + Constants.RebootLoopShortcutName + ".lnk");
+            }
+        }
+
+        public void RemoveShortcutFromStartup()
+        {
+            if (IsShortcutOfRebootLoopExists)
+            {
+                RemoveFile(StartupDirectoryFullPath, Constants.RebootLoopShortcutName + ".lnk", IsShortcutOfRebootLoopExists);
+            }
         }
 
         #endregion

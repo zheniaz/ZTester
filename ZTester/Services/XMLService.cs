@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 using Util;
 using ZTester.models;
@@ -16,11 +17,15 @@ namespace ZTester.Services
     {
         FileService _fileService = new FileService();
         string ZTesterConfigFilePath = "";
+        string ZTestSettingConfigFilePath = "";
 
         public XMLService()
         {
             ZTesterConfigFilePath = $"{_fileService.GetFullFilePath(Constants.ZTesterConfigName)}";
+            ZTestSettingConfigFilePath = $"{_fileService.GetFullFilePath(Constants.ZTestSettingConfigName)}";
         }
+
+        #region NetworkSettingsModel XML Region
 
         public List<NetworkSettingsModel> GetNetworkSettingsList()
         {
@@ -42,9 +47,59 @@ namespace ZTester.Services
             return networkSettings;
         }
 
-        public void SerializeToXML<NetworkSettingsModel>(List<NetworkSettingsModel> list, string targetPath)
+        #endregion
+
+        #region ZTestSettingModel XML Region
+
+        public List<ZTestSettingModel> GetZTestSettingsList()
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(List<NetworkSettingsModel>));
+            List<ZTestSettingModel> testSettingList = new List<ZTestSettingModel>();
+
+            XmlSerializer deserializer = new XmlSerializer(typeof(List<ZTestSettingModel>));
+            TextReader textReader = new StreamReader(ZTestSettingConfigFilePath);
+            testSettingList = (List<ZTestSettingModel>)deserializer.Deserialize(textReader);
+            textReader.Close();
+
+            return testSettingList;
+        }
+
+        public ZTestSettingModel GetZTestSetting(TestType testType)
+        {
+            List<ZTestSettingModel> testSettingList = new List<ZTestSettingModel>();
+            testSettingList = GetZTestSettingsList();
+            ZTestSettingModel networkSettings = testSettingList.Find(n => n.TestName == testType.ToString());
+            return networkSettings;
+        }
+
+        public int GetZTestSettingCount()
+        {
+            List<ZTestSettingModel> testSettingList = new List<ZTestSettingModel>();
+            testSettingList = GetZTestSettingsList();
+            return testSettingList.Count;
+        }
+
+        public void AddToExistingTestSettingConfigFile(List<ZTestSettingModel> newTestSettings)
+        {
+            List<ZTestSettingModel> testSettingList = new List<ZTestSettingModel>();
+            testSettingList = GetZTestSettingsList();
+            testSettingList.AddRange(newTestSettings);
+
+            SerializeToXML(testSettingList, ZTestSettingConfigFilePath);
+        }
+
+        public void RemoveZtestSetting(TestType testType)
+        {
+            List<ZTestSettingModel> testSettingList = new List<ZTestSettingModel>();
+            testSettingList = GetZTestSettingsList();
+            testSettingList.Remove(testSettingList.Find(t => t.TestName == testType.ToString()));
+            SerializeToXML(testSettingList, ZTestSettingConfigFilePath);
+        }
+
+        #endregion
+
+        public void SerializeToXML<T>(List<T> list, string targetPath)
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(List<T>));
             TextWriter textWriter = new StreamWriter(targetPath);
             serializer.Serialize(textWriter, list);
             textWriter.Close();

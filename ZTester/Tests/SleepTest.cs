@@ -11,10 +11,11 @@ using ZTester.models;
 using System.Diagnostics;
 using System.Management;
 using Util;
+using ZTester.Interfaces;
 
 namespace ZTester.Tests
 {
-    class SleepTest
+    class SleepTest : IZTester
     {
         private CMDService _cmdService = new CMDService();
         private FileService _fileService = new FileService();

@@ -3,11 +3,12 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Util;
+using ZTester.Interfaces;
 using ZTester.Services;
 
 namespace ZTester
 {
-    class RebootSystem 
+    class RebootSystemTest : IZTester
     {
         private CMDService _cmdService = new CMDService();
         private InputService _inputService = new InputService();
@@ -24,7 +25,7 @@ namespace ZTester
         public bool IsLogFileExists { get { return _fileService.CheckIfFileExists($"{_fileService.AppPath}\\{Constants.LogFileName}"); } set { } }
         public bool IsShortcutOfRebootLoopExists { get { return _fileService.CheckIfFileExists($"{StartupDirectoryFullPath}\\{Constants.RebootLoopShortcutName}.lnk"); } }
 
-        public RebootSystem()
+        public RebootSystemTest()
         {
             this.RebootCount = GetRebootCountFromLogFile();
         }
@@ -67,6 +68,11 @@ namespace ZTester
             Console.WriteLine("Rebooting System...");
             _logInService.EnableAutoLogIn();
             Thread.Sleep(2500);
+            ShutDownTheSystem();
+        }
+
+        public void ShutDownTheSystem()
+        {
             System.Diagnostics.Process.Start("ShutDown", "-r -t 0");
         }
 

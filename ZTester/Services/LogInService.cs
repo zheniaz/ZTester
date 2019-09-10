@@ -13,20 +13,10 @@ namespace ZTester.Services
 
         public void EnableAutoLogIn()
         {
-            
-
-
-            string keyPath = @"Software\Microsoft\Windows NT\CurrentVersion\Winlogon";
-            _registryKeyService.AddRegistryKey(keyPath, "AutoAdminLogon", "1");
-
-
-            //WriteDefaultLogin("admin", "1");
-            _cmdService.RunCMDCommand($"REG ADD {"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon"} /v AutoAdminLogon /t REG_SZ /d 1 /f");
-            _cmdService.RunCMDCommand($"ADD {"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon"} /v AutoAdminLogon /t REG_SZ /d 1 /f", fileName: "reg");
-            //_cmdService.RunCMDCommand($@"SET HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon /v AutoAdminLogonCount  /t REG_DWORD /d 1 /f", fileName: "reg");
-            //_cmdService.RunCMDCommand($"ADD {"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon"} /v DefaultDomainName /t REG_SZ /d INTOWINDOWS /f", fileName: "reg");
-            //_cmdService.RunCMDCommand($"ADD {"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon"} /v DefaultUserName /t REG_SZ /d admin /f", fileName: "reg");
-            //_cmdService.RunCMDCommand($"ADD {"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon"} /v DefaultPassword /t REG_SZ /d 1 /f", fileName: "reg");
+            _cmdService.RunCMDCommand("ADD \"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\" /v AutoAdminLogon /t REG_SZ /d 1 /f", fileName: "reg");
+            _cmdService.RunCMDCommand("ADD \"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\" /v DefaultDomainName /t REG_SZ /d INTOWINDOWS /f", fileName: "reg");
+            _cmdService.RunCMDCommand("ADD \"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\" /v DefaultUserName /t REG_SZ /d admin /f", fileName: "reg");
+            _cmdService.RunCMDCommand("ADD \"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\" /v DefaultPassword /t REG_SZ /d 1 /f", fileName: "reg");
         }
 
         public static void WriteDefaultLogin(string usr, string pwd)

@@ -32,11 +32,16 @@ namespace ZTester.Services
             {
                 System.Diagnostics.Process process = new System.Diagnostics.Process();
                 System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
+                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                 startInfo.FileName = "reg";
                 startInfo.Arguments = arguments;
                 process.StartInfo = startInfo;
                 process.Start();
+                string ErrorMessage = process.StandardError.ReadToEnd();
+                if (ErrorMessage.Length > 0)
+                {
+                    throw new Exception("Error:" + ErrorMessage);
+                }
             }
             catch (Exception e)
             {
@@ -53,7 +58,7 @@ namespace ZTester.Services
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo
             {
-                WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal,
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
                 FileName = fileName,
                 Arguments = arguments,
                 UseShellExecute = true,
@@ -76,6 +81,7 @@ namespace ZTester.Services
                 process.WaitForExit();
             }
             process.Start();
+            Thread.Sleep(500);
         }
 
         public void RunCMDCommands(string[] cmdCommandArray)

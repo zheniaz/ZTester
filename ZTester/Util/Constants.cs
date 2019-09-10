@@ -12,6 +12,7 @@ namespace Util
         public const string LogFileName = "rebootLog.txt";
         public const string RebootLoopShortcutName = "ZTester - Shortcut";
         public const string ZTesterConfigName = "ZTester.config";
+        public const string ZTestSettingConfigName = "ZTestSetting.config";
         public const string KernelStressName = "ksk.cmd";
         public const string TestBinPath = @"C:\TestBin";
 
