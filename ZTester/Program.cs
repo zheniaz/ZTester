@@ -33,49 +33,20 @@ namespace ZTester
 
         static IZTester zTester = null;
 
-        static 
-
-        Program()
-        {
-            
-        }
-
         static void Main(string[] args)
         {
-            #region Prod Region
+            //Console.WriteLine("ZTester, (c) 2019 ZHENIA Zgurovets Inc.");
+
+            #region testing region, remove after all
+
+
+
+            #endregion
 
             _logInService.IsUserAdministrator();
             if (_fileService.CheckIfFileExists(_fileService.AppPath + "\\" + Constants.ZTestSettingConfigName))
             {
                 SetConfiguration();
-            }
-            else
-            {
-                SelectTestPoint();
-            }
-
-            #endregion
-
-            #region PreProd Region
-
-            #endregion
-
-            #region testing region, remove after all
-
-            #endregion
-
-
-            
-            //Console.WriteLine("ZTester, (c) 2019 ZHENIA Zgurovets Inc.");
-
-            if (_rebootSystem.RebootCount > 10)
-            {
-                return;
-            }
-
-            if (_rebootSystem.IsLogFileExists)
-            {
-                _rebootSystem.Reboot();
             }
             else
             {
@@ -110,7 +81,7 @@ Checking The Environment:
     100. Check is HVCI running
 
     0.  To quit");
-            int selectedTest = -1;  // _inputService.SelectNumberFromTheRange(0, 100);
+            int selectedTest = -1;
 
             while (selectedTest != 0)
             {
@@ -119,7 +90,7 @@ Checking The Environment:
                 {
                     case 1:
                         {
-                            _rebootSystem.StartTest();
+                            _rebootSystem.SetTheEnvironment();
                             break;
                         }
 

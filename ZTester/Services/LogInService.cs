@@ -43,7 +43,7 @@ namespace ZTester.Services
 
         public void DisableAutoLogIn()
         {
-            _cmdService.RunCMDCommand($"SET {"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon"} /v AutoAdminLogon /t REG_SZ /d 0 /f", fileName: "reg");
+            _cmdService.RunCMDCommand("ADD \"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\" /v AutoAdminLogon /t REG_SZ /d 0 /f", fileName: "reg");
         }
 
         public void LoginAsGuest()

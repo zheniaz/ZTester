@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Util;
 using ZTester.Interfaces;
+using ZTester.models;
 using ZTester.Services;
 
 namespace ZTester
@@ -14,6 +16,7 @@ namespace ZTester
         private InputService _inputService = new InputService();
         private FileService _fileService = new FileService();
         private LogInService _logInService = new LogInService();
+        private XMLService _xmlService = new XMLService();
 
         public string LogFileFullPath { get { return IsLogFileExists ? Path.GetFullPath($"{_fileService.AppPath}\\{Constants.LogFileName}") : ""; } }
         public string StartupDirectoryFullPath { get { return _fileService.GetStartupFolderPath(); } set { } }
@@ -24,6 +27,7 @@ namespace ZTester
 
         public bool IsLogFileExists { get { return _fileService.CheckIfFileExists($"{_fileService.AppPath}\\{Constants.LogFileName}"); } set { } }
         public bool IsShortcutOfRebootLoopExists { get { return _fileService.CheckIfFileExists($"{StartupDirectoryFullPath}\\{Constants.RebootLoopShortcutName}.lnk"); } }
+        private ZTestSettingModel zTestSettingModel = new ZTestSettingModel();
 
         public RebootSystemTest()
         {
@@ -32,15 +36,14 @@ namespace ZTester
 
         public void StartTest()
         {
-            int rebootCount = CheckHowManyTimesReboot();
-            if (rebootCount > 0 && rebootCount <= 10)
+            zTestSettingModel = _xmlService.GetZTestSetting(TestType.RebootSystemTest);
+            if (RebootCount > 10)
             {
-                CreateLogFile(rebootCount);
-                if (!IsShortcutOfRebootLoopExists)
-                {
-                    _fileService.CreateShortcut(_fileService.AppPath, Constants.RebootLoopShortcutName, IsShortcutOfRebootLoopExists);
-                    _fileService.MoveFileToFolder(_fileService.AppPath + "\\" + Constants.RebootLoopShortcutName + ".lnk", StartupDirectoryFullPath + "\\" + Constants.RebootLoopShortcutName + ".lnk");
-                }
+                return;
+            }
+
+            if (IsLogFileExists)
+            {
                 Reboot();
             }
         }
@@ -83,54 +86,8 @@ namespace ZTester
             Thread.Sleep(3000);
             _fileService.RemoveFile(StartupDirectoryFullPath, Constants.RebootLoopShortcutName + ".lnk", IsShortcutOfRebootLoopExists);
             _logInService.DisableAutoLogIn();
+            _xmlService.RemoveZtestSetting(TestType.RebootSystemTest);
         }
-
-        //#region Input Hadler Region
-
-        //public void SelectTestPoint()
-        //{
-        //    Console.WriteLine(@"Please select a test:
-        //            1.  Reboot System Test
-        //            2.  Sleep Test
-        //            3.  Reboot System & Sleep Test
-        //            4.  To quit");
-        //    int selectedTest = _inputService.SelectNumberFromTheRange(1, 4);
-
-        //    switch (selectedTest)
-        //    {
-        //        case 1:
-        //            {
-        //                StartRebootLoop();
-        //                break;
-        //            }
-
-        //        case 2:
-        //            {
-        //                Console.WriteLine("This feature is under development.");
-        //                Thread.Sleep(3500);
-        //                break;
-        //            }
-
-        //        case 3:
-        //            {
-        //                Console.WriteLine("This feature is under development.");
-        //                Thread.Sleep(3500);
-        //                break;
-        //            }
-
-        //        case 4:
-        //            {
-        //                return;
-        //            }
-
-        //        default:
-        //            {
-        //                break;
-        //            }
-        //    }
-        //}
-
-        //#endregion
 
         #region Region For Working  With Files
 
@@ -157,7 +114,7 @@ namespace ZTester
 
             try
             {
-                string text = File.ReadAllText($"{ Constants.LogFileName}"); //"rebooted: |0| times";
+                string text = File.ReadAllText($"{ Constants.LogFileName}"); 
                 string rebootCountString = Regex.Match(text, @"(?<=\|)(.*?)(?=\|)").ToString();
                 int rebootCount = 0;
                 if (!Int32.TryParse(rebootCountString, out rebootCount))
@@ -167,6 +124,8 @@ namespace ZTester
                 text = text.Replace($@"|{rebootCount}|", $@"|{++rebootCount}|");
 
                 File.WriteAllText(LogFileFullPath, text);
+                zTestSettingModel.NeedToRunTimes = rebootCount;
+                _xmlService.EditZTestSetting(zTestSettingModel);
             }
             catch (Exception)
             {
@@ -195,6 +154,30 @@ namespace ZTester
             int rebooted = 0;
             Int32.TryParse(rebootCountString, out rebooted);
             return rebooted;
+        }
+
+        public void SetTheEnvironment(int priority = 1)
+        {
+            int rebootCount = CheckHowManyTimesReboot();
+            ZTestSettingModel testSetting = new ZTestSettingModel()
+            {
+                TestName = TestType.RebootSystemTest.ToString(),
+                NeedToRunTimes = rebootCount,
+                Priority = priority
+            };
+            List<ZTestSettingModel> ztestSettingLins = new List<ZTestSettingModel>() { testSetting };
+            _xmlService.SafeTestSettings(ztestSettingLins);
+
+            if (rebootCount > 0 && rebootCount <= 10)
+            {
+                CreateLogFile(rebootCount);
+                if (!IsShortcutOfRebootLoopExists)
+                {
+                    _fileService.CreateShortcut(_fileService.AppPath, Constants.RebootLoopShortcutName, IsShortcutOfRebootLoopExists);
+                    _fileService.MoveFileToFolder(_fileService.AppPath + "\\" + Constants.RebootLoopShortcutName + ".lnk", StartupDirectoryFullPath + "\\" + Constants.RebootLoopShortcutName + ".lnk");
+                }
+                Reboot();
+            }
         }
 
         private int GetRebootCountFromLogFile()
