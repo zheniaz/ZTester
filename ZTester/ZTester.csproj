@@ -61,7 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interfaces\IZTester.cs" />
-    <Compile Include="models\TestSettingModel.cs" />
+    <Compile Include="models\ZTestSettingModel.cs" />
     <Compile Include="Services\PowerShellService.cs" />
     <Compile Include="Services\RemoteConnectionService.cs" />
     <Compile Include="TestEnvironment\TestEnvironment.cs" />

@@ -71,6 +71,20 @@ namespace ZTester.Services
             return networkSettings;
         }
 
+        public void EditZTestSetting(ZTestSettingModel updatedTestSetting)
+        {
+            List<ZTestSettingModel> testSettingList = new List<ZTestSettingModel>();
+            testSettingList = GetZTestSettingsList();
+            foreach (var item in testSettingList)
+            {
+                if (item.TestName == updatedTestSetting.TestName)
+                {
+                    item.NeedToRunTimes = updatedTestSetting.NeedToRunTimes;
+                }
+            }
+            SerializeToXML(testSettingList);
+        }
+
         public int GetZTestSettingCount()
         {
             List<ZTestSettingModel> testSettingList = new List<ZTestSettingModel>();
@@ -83,24 +97,45 @@ namespace ZTester.Services
             List<ZTestSettingModel> testSettingList = new List<ZTestSettingModel>();
             testSettingList = GetZTestSettingsList();
             testSettingList.AddRange(newTestSettings);
+            SerializeToXML(testSettingList);
+        }
 
-            SerializeToXML(testSettingList, ZTestSettingConfigFilePath);
+        public void SafeTestSettings(List<ZTestSettingModel> zTestSettingModels)
+        {
+            if (_fileService.CheckIfFileExists(ZTestSettingConfigFilePath))
+            {
+                List<ZTestSettingModel> testSettingList = new List<ZTestSettingModel>();
+                testSettingList = GetZTestSettingsList();
+                testSettingList.AddRange(zTestSettingModels);
+                SerializeToXML(testSettingList);
+            }
+            else
+            {
+                SerializeToXML(zTestSettingModels);
+            }
         }
 
         public void RemoveZtestSetting(TestType testType)
         {
             List<ZTestSettingModel> testSettingList = new List<ZTestSettingModel>();
             testSettingList = GetZTestSettingsList();
-            testSettingList.Remove(testSettingList.Find(t => t.TestName == testType.ToString()));
-            SerializeToXML(testSettingList, ZTestSettingConfigFilePath);
+            if (testSettingList.Count == 1)
+            {
+                _fileService.RemoveFile(_fileService.AppPath, Constants.ZTestSettingConfigName, _fileService.IsZTestSettingXMLExists);
+            }
+            else
+            {
+                testSettingList.Remove(testSettingList.Find(t => t.TestName == testType.ToString()));
+                SerializeToXML(testSettingList);
+            }
         }
 
         #endregion
 
-        public void SerializeToXML<T>(List<T> list, string targetPath)
+        public void SerializeToXML<T>(List<T> list)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(List<T>));
-            TextWriter textWriter = new StreamWriter(targetPath);
+            TextWriter textWriter = new StreamWriter(ZTestSettingConfigFilePath);
             serializer.Serialize(textWriter, list);
             textWriter.Close();
         }
