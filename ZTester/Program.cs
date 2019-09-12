@@ -58,7 +58,7 @@ namespace ZTester
 
         public static void SelectTestPoint()
         {
-            Console.WriteLine(@"Please select a test:
+            Console.WriteLine(@"Please select a test set of tests (e.g.  1,2,4)
     1.  Reboot System Test
     2.  Sleep Test
     3.  Set Debugger
@@ -81,6 +81,8 @@ Checking The Environment:
     100. Check is HVCI running
 
     0.  To quit");
+
+
             int selectedTest = -1;
 
             while (selectedTest != 0)
@@ -205,29 +207,44 @@ Checking The Environment:
         {
             List<ZTestSettingModel> testConfigurationList = _xmlService.GetZTestSettingsList();
 
-            TestType testType = (TestType)Enum.Parse(typeof(TestType), testConfigurationList.FirstOrDefault().TestName);
+            //while (testConfigurationList.Count > 0)
+            //{
+                ZTestSettingModel testSetting = testConfigurationList.Aggregate((seed, t) => t.Priority < seed.Priority ? t : seed);
+                TestType testType = (TestType)Enum.Parse(typeof(TestType), testSetting.TestName);
 
-            switch (testType)
+                switch (testType)
+                {
+                    case TestType.None:
+                        break;
+                    case TestType.RebootSystemTest:
+                        zTester = new RebootSystemTest();
+                        break;
+                    case TestType.SleepTest:
+                        zTester = new SleepTest();
+                        break;
+                    case TestType.WSHTest:
+                        zTester = new WSHTester();
+                        break;
+                    case TestType.KernelStressTest:
+                        zTester = new KernelStressTest();
+                        break;
+                    default:
+                        break;
+                }
+
+            if (testSetting.IsSettedEnvironment)
             {
-                case TestType.None:
-                    break;
-                case TestType.RebootSystemTest:
-                    zTester = new RebootSystemTest();
-                    break;
-                case TestType.SleepTest:
-                    zTester = new SleepTest();
-                    break;
-                case TestType.WSHTest:
-                    zTester = new WSHTester();
-                    break;
-                case TestType.KernelStressTest:
-                    zTester = new KernelStressTest();
-                    break;
-                default:
-                    break;
+                zTester.StartTest();
+            }
+            else
+            {
+                zTester.SetTheEnvironment();
             }
 
-            zTester.StartTest();
+               
+
+            //    testConfigurationList = _xmlService.GetZTestSettingsList();
+            //}
         }
 
         #endregion

@@ -77,16 +77,19 @@ namespace ZTester.Tests
 
         }
 
-        public void SetTheEnvironment(int priority = 1)
+        public void SetTheEnvironment(/*int priority = 1*/)
         {
             //1. Enable complete memory dump
             _testEnvironment.EnableCompleteMemoryDump();
 
             //2. Create XML file 
-            ZTestSettingModel testSettingModel = new ZTestSettingModel();
-            testSettingModel.TestName = TestType.KernelStressTest.ToString();
-            testSettingModel.NeedToRunTimes = 1;
-            testSettingModel.Priority = priority;
+            ZTestSettingModel testSettingModel = new ZTestSettingModel()
+            {
+                TestName = TestType.KernelStressTest.ToString(),
+                NeedToRunTimes = 1,
+                //Priority = priority,
+                IsSettedEnvironment = true
+            };
             string targetXMLPath = _fileService.AppPath + "\\" + Constants.ZTestSettingConfigName;
 
             Console.WriteLine("Please select from RS1 to RS5:");

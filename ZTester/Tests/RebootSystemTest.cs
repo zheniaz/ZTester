@@ -156,14 +156,15 @@ namespace ZTester
             return rebooted;
         }
 
-        public void SetTheEnvironment(int priority = 1)
+        public void SetTheEnvironment(/*int priority = 1*/)
         {
             int rebootCount = CheckHowManyTimesReboot();
             ZTestSettingModel testSetting = new ZTestSettingModel()
             {
                 TestName = TestType.RebootSystemTest.ToString(),
                 NeedToRunTimes = rebootCount,
-                Priority = priority
+                //Priority = priority,
+                IsSettedEnvironment = true
             };
             List<ZTestSettingModel> ztestSettingLins = new List<ZTestSettingModel>() { testSetting };
             _xmlService.SafeTestSettings(ztestSettingLins);

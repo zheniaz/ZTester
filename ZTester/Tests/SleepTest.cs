@@ -186,5 +186,10 @@ namespace ZTester.Tests
         {
 
         }
+
+        public void SetTheEnvironment()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

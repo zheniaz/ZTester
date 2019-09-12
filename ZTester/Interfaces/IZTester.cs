@@ -9,5 +9,6 @@ namespace ZTester.Interfaces
     interface IZTester
     {
         void StartTest();
+        void SetTheEnvironment();
     }
 }
