@@ -13,6 +13,15 @@ namespace ZTester.Services
 
         public void EnableAutoLogIn()
         {
+            Console.WriteLine("Open new CMD window as Administrator and run following commands and after that press any key");
+            Console.WriteLine("  REG ADD \"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\" /v AutoAdminLogon /t REG_SZ /d 1 /f");
+            Console.WriteLine("  REG ADD \"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\" /v DefaultDomainName /t REG_SZ /d INTOWINDOWS /f");
+            Console.WriteLine("  REG ADD \"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\" /v DefaultUserName /t REG_SZ /d admin /f");
+            Console.WriteLine("  REG ADD \"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\" /v DefaultPassword /t REG_SZ /d 1 /f");
+            Console.WriteLine();
+            Console.WriteLine("press any key:");
+            Console.ReadKey();
+
             _cmdService.RunCMDCommand("ADD \"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\" /v AutoAdminLogon /t REG_SZ /d 1 /f", fileName: "reg");
             _cmdService.RunCMDCommand("ADD \"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\" /v DefaultDomainName /t REG_SZ /d INTOWINDOWS /f", fileName: "reg");
             _cmdService.RunCMDCommand("ADD \"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\" /v DefaultUserName /t REG_SZ /d admin /f", fileName: "reg");

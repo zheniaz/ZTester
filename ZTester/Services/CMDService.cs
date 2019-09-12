@@ -81,7 +81,6 @@ namespace ZTester.Services
                 process.WaitForExit();
             }
             process.Start();
-            Thread.Sleep(500);
         }
 
         public void RunCMDCommands(string[] cmdCommandArray)
