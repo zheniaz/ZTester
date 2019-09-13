@@ -81,9 +81,9 @@ namespace ZTester.Services
                 {
                     break;
                 }
-                if (converted > 5 || converted < 1)
+                if (converted > 100 || converted < 1)
                 {
-                    break;
+                    isValidated = false;
                 }
                 testList.Add(converted);
             }

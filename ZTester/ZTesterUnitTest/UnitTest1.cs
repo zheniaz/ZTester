@@ -33,9 +33,9 @@ namespace ZTesterUnitTest
         [TestMethod]
         public void TestSelectOneTest4()
         {
-            int? expected = null;
+            int? expected = 1;
             var result = inputService.SelectOneTest(" 1");
-            Assert.AreEqual(expected, result);
+            Assert.AreEqual(expected, result[0]);
         }
 
         [TestMethod]
