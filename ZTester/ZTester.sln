@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.757
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZTester", "ZTester.csproj", "{054F3674-43FD-4772-B3F0-947260E6BEB7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZTesterUnitTest", "ZTesterUnitTest\ZTesterUnitTest.csproj", "{BDBCC4D0-08FE-43FF-8838-0B4C83EED789}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{054F3674-43FD-4772-B3F0-947260E6BEB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{054F3674-43FD-4772-B3F0-947260E6BEB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{054F3674-43FD-4772-B3F0-947260E6BEB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDBCC4D0-08FE-43FF-8838-0B4C83EED789}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDBCC4D0-08FE-43FF-8838-0B4C83EED789}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDBCC4D0-08FE-43FF-8838-0B4C83EED789}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDBCC4D0-08FE-43FF-8838-0B4C83EED789}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

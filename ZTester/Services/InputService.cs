@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ZTester.Services
 {
-    class InputService
+    public class InputService
     {
         public int SelectNumberFromTheRange(int from, int to, string query = null)
         {
@@ -22,6 +23,76 @@ namespace ZTester.Services
             } while (count < from || count > to);
 
             return count;
+        }
+
+        public List<int> CreateTestList()
+        {
+            string str = Console.ReadLine();
+            List<int> testList = null;
+
+            do
+            {
+                str = Console.ReadLine();
+                if (str.Contains(','))
+                {
+                    testList = SelectSetOfTests(str);
+                }
+                else
+                {
+                    testList = SelectOneTest(str);
+                }
+
+                if (testList == null)
+                {
+                    Console.WriteLine("You have entered incorrect value, try again (e.g \"1\" or \"1,2\"");
+                }
+            } while (testList != null);
+
+            return testList;
+        }
+
+        public List<int> SelectOneTest(string str)
+        {
+            str = str.Trim();
+            List<int> testList = new List<int>();
+            int x;
+            if (Int32.TryParse(str, out x))
+            {
+                if (x >= 0 && x <= 100)
+                {
+                    testList.Add(x);
+                }
+            }
+            return testList.Count == 1 ? testList : null;
+        }
+
+        public List<int> SelectSetOfTests(string str)
+        {
+            str = str.Trim();
+            str = str.Replace(" ", String.Empty);
+            string[] testArr = str.Split(',').Where(s => s != "").ToArray();
+            bool isValidated = false;
+            List<int> testList = new List<int>();
+            int converted;
+            foreach (var item in testArr)
+            {
+                isValidated = Int32.TryParse(item, out converted);
+                if (!isValidated)
+                {
+                    break;
+                }
+                if (converted > 100 || converted < 1)
+                {
+                    isValidated = false;
+                }
+                testList.Add(converted);
+            }
+            if (!isValidated)
+            {
+
+                return null;
+            }
+            return testList;
         }
 
         public bool CheckYesOrNo(string query)
@@ -112,7 +183,7 @@ namespace ZTester.Services
 
         private bool ValidateRS(string str)
         {
-            if(str.Length != 3)
+            if (str.Length != 3)
             {
                 Console.WriteLine("You entered incorect value");
                 return false;

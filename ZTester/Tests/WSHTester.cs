@@ -116,5 +116,10 @@ namespace ZTester.Tests
             _fileService.RemoveFile(scriptLocation, $"{testName}.xml", isXMLExists);
             _fileService.RenameFile($"{sourceTestFile}.xml", $"{testPath}");
         }
+
+        public void SetTheEnvironment()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

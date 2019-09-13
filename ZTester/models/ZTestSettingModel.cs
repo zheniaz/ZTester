@@ -13,6 +13,9 @@ namespace ZTester.models
         [XmlElement("TestFileFullPath")]
         public string TestFileFullPath { get; set; }
 
+        [XmlElement("IsSettedEnvironment")]
+        public bool IsSettedEnvironment { get; set; }
+
         [XmlElement("Priority")]
         public int Priority { get; set; }
     }
