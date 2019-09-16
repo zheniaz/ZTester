@@ -10,5 +10,6 @@ namespace ZTester.Interfaces
     {
         void StartTest();
         void SetTheEnvironment();
+        void FinishTest();
     }
 }

@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Linq;
 using System.Xml.Serialization;
 using Util;
 using ZTester.models;
@@ -54,11 +47,14 @@ namespace ZTester.Services
         public List<ZTestSettingModel> GetZTestSettingsList()
         {
             List<ZTestSettingModel> testSettingList = new List<ZTestSettingModel>();
-
-            XmlSerializer deserializer = new XmlSerializer(typeof(List<ZTestSettingModel>));
-            TextReader textReader = new StreamReader(ZTestSettingConfigFilePath);
-            testSettingList = (List<ZTestSettingModel>)deserializer.Deserialize(textReader);
-            textReader.Close();
+            if (_fileService.CheckIfFileExists(ZTestSettingConfigFilePath))
+            {
+                XmlSerializer deserializer = new XmlSerializer(typeof(List<ZTestSettingModel>));
+                TextReader textReader = new StreamReader(ZTestSettingConfigFilePath);
+                testSettingList = (List<ZTestSettingModel>)deserializer.Deserialize(textReader);
+                textReader.Close();
+            }
+            
 
             return testSettingList;
         }
@@ -80,6 +76,7 @@ namespace ZTester.Services
                 if (item.TestName == updatedTestSetting.TestName)
                 {
                     item.NeedToRunTimes = updatedTestSetting.NeedToRunTimes;
+                    item.IsSettedEnvironment = updatedTestSetting.IsSettedEnvironment;
                 }
             }
             SerializeToXML(testSettingList);
