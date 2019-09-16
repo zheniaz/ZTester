@@ -11,6 +11,7 @@ namespace ZTester.Tests
         private InputService _inputService = new InputService();
         private FileService _fileService = new FileService();
         private CMDService _cmdService = new CMDService();
+        private XMLService _xmlService = new XMLService();
 
         private string scriptLocation = @"C:\work";
         private string sourceXMLFileName = "";
@@ -19,6 +20,8 @@ namespace ZTester.Tests
 
         public void StartTest()
         {
+            _xmlService.RemoveZtestSetting(TestType.WSHTest);
+
             List<string> xmlFiles = _fileService.GetAllFilesWithExectExtantion(scriptLocation, "xml");
             List<string> scriptFolders = null;
             bool isXMLExists = false;
@@ -115,11 +118,23 @@ namespace ZTester.Tests
 
             _fileService.RemoveFile(scriptLocation, $"{testName}.xml", isXMLExists);
             _fileService.RenameFile($"{sourceTestFile}.xml", $"{testPath}");
+
+            FinishTest();
         }
 
         public void SetTheEnvironment()
         {
             throw new NotImplementedException();
+        }
+
+        public void FinishTest()
+        {
+            _xmlService.RemoveZtestSetting(TestType.RebootSystemTest);
+
+            if (_xmlService.GetZTestSettingCount() > 0)
+            {
+                Program.SetConfiguration();
+            }
         }
     }
 }

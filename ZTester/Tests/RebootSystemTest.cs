@@ -86,7 +86,7 @@ namespace ZTester
             Thread.Sleep(3000);
             _fileService.RemoveFile(StartupDirectoryFullPath, Constants.RebootLoopShortcutName + ".lnk", IsShortcutOfRebootLoopExists);
             _logInService.DisableAutoLogIn();
-            _xmlService.RemoveZtestSetting(TestType.RebootSystemTest);
+            FinishTest();
         }
 
         #region Region For Working  With Files
@@ -156,18 +156,17 @@ namespace ZTester
             return rebooted;
         }
 
-        public void SetTheEnvironment(/*int priority = 1*/)
+        public void SetTheEnvironment()
         {
             int rebootCount = CheckHowManyTimesReboot();
+
             ZTestSettingModel testSetting = new ZTestSettingModel()
             {
                 TestName = TestType.RebootSystemTest.ToString(),
                 NeedToRunTimes = rebootCount,
-                //Priority = priority,
                 IsSettedEnvironment = true
             };
-            List<ZTestSettingModel> ztestSettingLins = new List<ZTestSettingModel>() { testSetting };
-            _xmlService.SafeTestSettings(ztestSettingLins);
+            _xmlService.EditZTestSetting(testSetting);
 
             if (rebootCount > 0 && rebootCount <= 10)
             {
@@ -212,6 +211,16 @@ namespace ZTester
             string oldfileName = $"{_fileService.AppPath}\\{Constants.LogFileName}";
             string newFileNameTitle = $"{_fileService.AppPath}\\rebootLog rebooted-{RebootCount}-times {DateTime.Now:MM-dd-yyyy_hh-mm-ss}.txt";
             _fileService.RenameFile(oldfileName, newFileNameTitle);
+        }
+
+        public void FinishTest()
+        {
+            _xmlService.RemoveZtestSetting(TestType.RebootSystemTest);
+
+            if (_xmlService.GetZTestSettingCount() > 0)
+            {
+                Program.SetConfiguration();
+            }
         }
 
         #endregion

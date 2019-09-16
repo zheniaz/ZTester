@@ -1,18 +1,38 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using Util;
+using ZTester.Interfaces;
+using ZTester.models;
 using ZTester.Services;
 
 namespace ZTester.Tests
 {
-    class DebuggerSettingTest
+    class DebuggerSettingTest : IZTester
     {
         private CMDService _cmdService = new CMDService();
         private InputService _inputService = new InputService();
+        private XMLService _xmlService = new XMLService();
+
+        public void SetTheEnvironment()
+        {
+            ZTestSettingModel testSetting = new ZTestSettingModel()
+            {
+                TestName = TestType.DebuggerSetting.ToString(),
+                NeedToRunTimes = 1,
+                IsSettedEnvironment = true
+            };
+
+            Console.WriteLine("Please open new CMD window as Administrator and run following commands to set the Environment and after that press any key");
+            Console.WriteLine("  bcdedit /set {bootmgr} testsigning on");
+            Console.WriteLine("  bcdedit /set {bootmgr} bootdebug on");
+            Console.WriteLine("  bcdedit /set testsigning on");
+            Console.WriteLine("  bcdedit /bootdebug on");
+            Console.WriteLine("  bcdedit /debug on");
+            Console.WriteLine("press any key:");
+            Console.ReadKey();
+
+            _xmlService.EditZTestSetting(testSetting);
+            StartTest();
+        }
 
         public void StartTest()
         {
@@ -31,14 +51,14 @@ namespace ZTester.Tests
             var cmdFullFileName = Environment.SystemDirectory + @"\";
 
 
-            List<string> arguments = new List<string>()
-            {
-                "bcdedit /set {bootmgr} testsigning on",
-                "bcdedit /set {bootmgr} bootdebug on",
-                "bcdedit /set testsigning on",
-                "bcdedit /bootdebug on",
-                "bcdedit /debug on",
-            };
+            //List<string> arguments = new List<string>()
+            //{
+            //    "bcdedit /set {bootmgr} testsigning on",
+            //    "bcdedit /set {bootmgr} bootdebug on",
+            //    "bcdedit /set testsigning on",
+            //    "bcdedit /bootdebug on",
+            //    "bcdedit /debug on",
+            //};
             //List<string> arguments = new List<string>()
             //{
             //    "/set {bootmgr} testsigning on",
@@ -48,14 +68,14 @@ namespace ZTester.Tests
             //    "/debug on",
             //};
 
-            foreach (var item in arguments)
-            {
-                _cmdService.RunCMDCommand(item);
-            }
+            //foreach (var item in arguments)
+            //{
+            //    Process.Start("bcdedit.exe", item);
+            //}
 
             string hostIPDerault = "10.216.79.136";
 
-            Console.WriteLine("Enter hostIP (Example: 10.216.79.136) ");
+            Console.WriteLine("Enter hostIP (eg: 10.216.79.136) ");
             string hostIP = _inputService.ReadIPAddress();
             if (hostIP == "")
             {
@@ -69,7 +89,24 @@ namespace ZTester.Tests
             Console.WriteLine("port: " + portNumber);
             Console.WriteLine("key:  " + key);
 
+            Console.WriteLine("Please open new CMD window as Administrator and run following commands to set dbgsettings");
+            Console.WriteLine($@"    bcdedit /dbgsettings net hostip:{hostIP} port:{portNumber} key:{key}");
+
             _cmdService.RunCMDCommand($@"/dbgsettings net hostip:{hostIP} port:{portNumber} key:{key}", fileName: Environment.SystemDirectory + "\\bcdedit.exe"); //            bcdedit /dbgsettings
+
+            FinishTest();
+        }
+
+
+
+        public void FinishTest()
+        {
+            _xmlService.RemoveZtestSetting(TestType.RebootSystemTest);
+
+            if (_xmlService.GetZTestSettingCount() > 0)
+            {
+                Program.SetConfiguration();
+            }
         }
     }
 }

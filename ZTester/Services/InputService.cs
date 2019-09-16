@@ -27,7 +27,7 @@ namespace ZTester.Services
 
         public List<int> CreateTestList()
         {
-            string str = Console.ReadLine();
+            string str = "";
             List<int> testList = null;
 
             do
@@ -46,7 +46,7 @@ namespace ZTester.Services
                 {
                     Console.WriteLine("You have entered incorrect value, try again (e.g \"1\" or \"1,2\"");
                 }
-            } while (testList != null);
+            } while (testList == null);
 
             return testList;
         }
@@ -81,7 +81,7 @@ namespace ZTester.Services
                 {
                     break;
                 }
-                if (converted > 100 || converted < 1)
+                if (converted > 5 || converted < 1)
                 {
                     isValidated = false;
                 }

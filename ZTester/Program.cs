@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Security.Principal;
-using System.Threading;
 using ZTester.TestEnvironmentSpaceName;
 using ZTester.Services;
 using ZTester.Tests;
-using System.Collections.ObjectModel;
 using Util;
 using ZTester.Interfaces;
 using System.Linq;
@@ -58,7 +55,8 @@ namespace ZTester
 
         public static void SelectTestPoint()
         {
-            Console.WriteLine(@"Please select a test set of tests (e.g.  1,2,4)
+            Console.WriteLine(@"Please select a test set of tests (e.g.   1,2,3,4,5 or 11,12 ... 100). You cannot set Test and Environment at the same time.
+Tests:
     1.  Reboot System Test
     2.  Sleep Test
     3.  Set Debugger
@@ -85,116 +83,98 @@ Checking The Environment:
 
             int selectedTest = -1;
 
-            while (selectedTest != 0)
+            //selectedTest = _inputService.SelectNumberFromTheRange(0, 100);
+
+            List<int> testList = _inputService.CreateTestList();
+
+
+            if (testList.Min() <= 5)
             {
-                selectedTest = _inputService.SelectNumberFromTheRange(0, 100);
-                switch (selectedTest)
+                CreateZTestSettingList(testList);
+                SetConfiguration();
+            }
+            else
+            {
+                foreach (var item in testList)
                 {
-                    case 1:
-                        {
-                            _rebootSystem.SetTheEnvironment();
-                            break;
-                        }
+                    switch (item)
+                    {
+                        case 11:
+                            {
+                                _testEnvironment.TurnOnHVCI();
+                                break;
+                            }
 
-                    case 2:
-                        {
-                            _sleepTest.StartTest();
-                            break;
-                        }
+                        case 12:
+                            {
+                                _testEnvironment.TurnOffHVCI();
+                                break;
+                            }
 
-                    case 3:
-                        {
-                            _debuggerSetting.StartTest();
-                            break;
-                        }
+                        case 21:
+                            {
+                                _testEnvironment.TurnOnHyperThreading();
+                                break;
+                            }
 
-                    case 4:
-                        {
-                            _wshTester.StartTest();
-                            break;
-                        }
+                        case 22:
+                            {
+                                _testEnvironment.TurnOFFHyperThreading();
+                                break;
+                            }
 
-                    case 5:
-                        {
-                            _kernelStressTest.SetTheEnvironment();
-                            break;
-                        }
+                        case 31:
+                            {
+                                _testEnvironment.EnableWindowsUpdate();
+                                break;
+                            }
 
-                    case 11:
-                        {
-                            _testEnvironment.TurnOnHVCI();
-                            break;
-                        }
+                        case 32:
+                            {
+                                _testEnvironment.DisableWindowsUpdate();
+                                break;
+                            }
 
-                    case 12:
-                        {
-                            _testEnvironment.TurnOffHVCI();
-                            break;
-                        }
+                        case 41:
+                            {
+                                _testEnvironment.TurnOnM5M11();
+                                break;
+                            }
 
-                    case 21:
-                        {
-                            _testEnvironment.TurnOnHyperThreading();
-                            break;
-                        }
+                        case 42:
+                            {
+                                _testEnvironment.TurnOFFM5M11();
+                                break;
+                            }
 
-                    case 22:
-                        {
-                            _testEnvironment.TurnOFFHyperThreading();
-                            break;
-                        }
+                        case 51:
+                            {
+                                _logInService.EnableAutoLogIn();
+                                break;
+                            }
 
-                    case 31:
-                        {
-                            _testEnvironment.EnableWindowsUpdate();
-                            break;
-                        }
+                        case 52:
+                            {
+                                _logInService.DisableAutoLogIn();
+                                break;
+                            }
 
-                    case 32:
-                        {
-                            _testEnvironment.DisableWindowsUpdate();
-                            break;
-                        }
+                        case 100:
+                            {
+                                _powershellService.ExecutePowerShellScript(Constants.checkIsHVCIrunning);
+                                break;
+                            }
 
-                    case 41:
-                        {
-                            _testEnvironment.TurnOnM5M11();
-                            break;
-                        }
+                        case 0:
+                            {
+                                break;
+                            }
 
-                    case 42:
-                        {
-                            _testEnvironment.TurnOFFM5M11();
-                            break;
-                        }
-
-                    case 51:
-                        {
-                            _logInService.EnableAutoLogIn();
-                            break;
-                        }
-
-                    case 52:
-                        {
-                            _logInService.DisableAutoLogIn();
-                            break;
-                        }
-
-                    case 100:
-                        {
-                            _powershellService.ExecutePowerShellScript(Constants.checkIsHVCIrunning);
-                            break;
-                        }
-
-                    case 0:
-                        {
-                            break;
-                        }
-
-                    default:
-                        {
-                            break;
-                        }
+                        default:
+                            {
+                                break;
+                            }
+                    }
                 }
             }
         }
@@ -203,34 +183,37 @@ Checking The Environment:
 
         #region Seting ZTestSetting.Configuration
 
-        static void SetConfiguration()
+        public static void SetConfiguration()
         {
             List<ZTestSettingModel> testConfigurationList = _xmlService.GetZTestSettingsList();
 
             //while (testConfigurationList.Count > 0)
             //{
-                ZTestSettingModel testSetting = testConfigurationList.Aggregate((seed, t) => t.Priority < seed.Priority ? t : seed);
-                TestType testType = (TestType)Enum.Parse(typeof(TestType), testSetting.TestName);
+            ZTestSettingModel testSetting = testConfigurationList.Aggregate((seed, t) => t.Priority < seed.Priority ? t : seed);
+            TestType testType = (TestType)Enum.Parse(typeof(TestType), testSetting.TestName);
 
-                switch (testType)
-                {
-                    case TestType.None:
-                        break;
-                    case TestType.RebootSystemTest:
-                        zTester = new RebootSystemTest();
-                        break;
-                    case TestType.SleepTest:
-                        zTester = new SleepTest();
-                        break;
-                    case TestType.WSHTest:
-                        zTester = new WSHTester();
-                        break;
-                    case TestType.KernelStressTest:
-                        zTester = new KernelStressTest();
-                        break;
-                    default:
-                        break;
-                }
+            switch (testType)
+            {
+                case TestType.None:
+                    break;
+                case TestType.RebootSystemTest:
+                    zTester = new RebootSystemTest();
+                    break;
+                case TestType.SleepTest:
+                    zTester = new SleepTest();
+                    break;
+                case TestType.DebuggerSetting:
+                    zTester = new DebuggerSettingTest();
+                    break;
+                case TestType.WSHTest:
+                    zTester = new WSHTester();
+                    break;
+                case TestType.KernelStressTest:
+                    zTester = new KernelStressTest();
+                    break;
+                default:
+                    break;
+            }
 
             if (testSetting.IsSettedEnvironment)
             {
@@ -241,12 +224,31 @@ Checking The Environment:
                 zTester.SetTheEnvironment();
             }
 
-               
+
 
             //    testConfigurationList = _xmlService.GetZTestSettingsList();
             //}
         }
 
         #endregion
+
+        static void CreateZTestSettingList(List<int> testList)
+        {
+            int priority = 0;
+
+            List<ZTestSettingModel> zTestSettingModels = new List<ZTestSettingModel>();
+
+            foreach (var item in testList)
+            {
+                ZTestSettingModel zTestSettingModel = new ZTestSettingModel()
+                {
+                    TestName = ((TestType)item).ToString(),
+                    Priority = ++priority,
+                    IsSettedEnvironment = false
+                };
+                zTestSettingModels.Add(zTestSettingModel);
+            }
+            _xmlService.SafeTestSettings(zTestSettingModels);
+        }
     }
 }

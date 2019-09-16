@@ -23,6 +23,6 @@ namespace Util
         #endregion
     }
 
-    public enum TestType { None, RebootSystemTest, SleepTest, WSHTest, KernelStressTest };
+    public enum TestType { None, RebootSystemTest, SleepTest, DebuggerSetting, WSHTest, KernelStressTest };
     public enum SystemType { AMD64, x86 };
 }
