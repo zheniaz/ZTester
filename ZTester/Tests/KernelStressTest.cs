@@ -5,6 +5,7 @@ using ZTester.TestEnvironmentSpaceName;
 using ZTester.models;
 using ZTester.Services;
 using ZTester.Interfaces;
+using System.Threading;
 
 namespace ZTester.Tests
 {
@@ -23,6 +24,8 @@ namespace ZTester.Tests
 
         public void StartTest()
         {
+            Console.WriteLine("KernelStress running...");
+            Thread.Sleep(1500);
             _fileService.RemoveShortcutFromStartup();
 
             ZTestSettingModel testSettingModel = new ZTestSettingModel();
