@@ -80,13 +80,7 @@ Checking The Environment:
 
     0.  To quit");
 
-
-            int selectedTest = -1;
-
-            //selectedTest = _inputService.SelectNumberFromTheRange(0, 100);
-
             List<int> testList = _inputService.CreateTestList();
-
 
             if (testList.Min() <= 5)
             {
@@ -187,8 +181,6 @@ Checking The Environment:
         {
             List<ZTestSettingModel> testConfigurationList = _xmlService.GetZTestSettingsList();
 
-            //while (testConfigurationList.Count > 0)
-            //{
             ZTestSettingModel testSetting = testConfigurationList.Aggregate((seed, t) => t.Priority < seed.Priority ? t : seed);
             TestType testType = (TestType)Enum.Parse(typeof(TestType), testSetting.TestName);
 
@@ -223,11 +215,6 @@ Checking The Environment:
             {
                 zTester.SetTheEnvironment();
             }
-
-
-
-            //    testConfigurationList = _xmlService.GetZTestSettingsList();
-            //}
         }
 
         #endregion
