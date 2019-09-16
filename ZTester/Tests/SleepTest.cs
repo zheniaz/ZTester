@@ -18,6 +18,9 @@ namespace ZTester.Tests
 
         public void StartTest()
         {
+            Console.WriteLine("SlelepTest running...");
+            Thread.Sleep(1500);
+
             if (_fileService.IsShortcutOfRebootLoopExists)
             {
                 _fileService.RemoveShortcutFromStartup();

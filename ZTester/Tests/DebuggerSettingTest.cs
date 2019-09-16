@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Util;
 using ZTester.Interfaces;
 using ZTester.models;
@@ -36,6 +37,8 @@ namespace ZTester.Tests
 
         public void StartTest()
         {
+            Console.WriteLine("DebuggerSetting running...");
+            Thread.Sleep(1500);
             _cmdService.RunCMDCommand($@"ADD HKLM\SYSTEM\CurrentControlSet\Control\CrashControl /v CrashDumpEnabled /t REG_DWORD /d 1 /f", fileName: "reg");
             _cmdService.RunCMDCommand("bcdedit /set {bootmgr} testsigning on");
             _cmdService.RunCMDCommand("bcdedit /set {bootmgr} bootdebug on");
